@@ -1,12 +1,14 @@
 ﻿# Git 学习笔记
 
+## lesson-1 一些基础知识
+
 Git有三个区:1.工作区;2.暂存区;3.仓库
 
 **命令:**
 
 + git init :在当前目录初始化一个Git仓库(即创建隐藏的.git文件夹，包含底层的对象数据库)
 
-+ git status :查看当前工作区，暂存区，仓库的状态
++ git status :查看当前工作区，暂存区状态
 
 + git add :把文件加入暂存区
 
@@ -56,8 +58,24 @@ Tree对象保存了当前暂存区的目录结构，文件名和文件名所指�
 
 + git cat-file -p :cat-file表示打印Git的底层对象，-p表示"漂亮的打印"，即将对象的解压缩再打印，当传入一个哈希(40位或者简短的前7位)，它就能查看该对象
 
++ git log --oneline :查看commit日志
+
 **knowledge:**
 
 + 1.master是Git底层的文本指针，它始终指向最后一次commit的Commit对象
 
 + 2.HEAD是git底层的文本指针，它指向当前工作的哪一次commit状态
+
+## lesson-2 了解Branch
+
+Bracn仅仅是一个指向Commit对象的可变文本指针，相关的有以下命令:
+
++ git branch 分支名字 :创建分支文本指针，当前与master指向同一个Commit对象
+
++ git checkout 分支名字 :让HEAD指针指向分支指针
+
++ git checkout -b 分支名字 :创建分支指针并立即让HEAD指向该分支指针
+
++ git branch :查看本地所有分支，带*的是HEAD所指向的
+
+注意，新提交的Commit对象只会导致HEAD所指向的分支指针移动！最终形成像树一样的Commit对象连接结构
