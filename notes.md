@@ -102,7 +102,7 @@ Merge的目的就是将不同的分支功能合并
 
 执行```git merge 被合并的分支名(feature)```将当前分支(cur)与分支(feature)进行合并
 
-合并后:
+**合并后:**
 
 + Case1:如果cur所指向的是feature的父节点，则直接挪动cur指针到feature指针处
 
@@ -110,9 +110,18 @@ Merge的目的就是将不同的分支功能合并
 
 + Case3:反之，产生新的Commit对象，其有两个父节点，分别为feature指针所指向的和cur指针所指向的，然后挪动cur指针指向当前新的Commit对象
 
-命令:
+**命令:**
 
 + git log --graph --all :展现出分支图
 
-+ git merge 被合并分支名 
++ git merge 被合并分支名 -m "合并说明" 
 
++ git show 哈希值 :展现对象属性和内容
+
+补充说明:git log --oneline后，如果遇到多个父节点，他会将父节点依次遍历，遍历所有分支到父节点们的公共父节点后在继续遍历
+
+**这里解释一下怎么在linux子系统里面运行C++文件:**
+
++ first step: g++ 文件名 -0 生成的可执行文件名
+
++ second step: ./可执行文件名
