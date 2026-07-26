@@ -126,7 +126,7 @@ merge的目的就是将不同的分支功能合并
 
 reset就是回滚指针
 
-reset有三种模式:
+**reset有三种模式:**
 
 + 1. git reset --soft
 
@@ -149,7 +149,7 @@ git commit -m "重新修改的信息"
 
 当reset后，目标节点和中间连接的节点变为不可达状态(没有分支指针能回滚到它)，Git有垃圾回收机制，当这些节点长时间不可达时，会被删除
 
-这里要重新解释一下:
+**这里要重新解释一下:**
 
 + 暂存区对相同文件只会保留最后一次add
 
@@ -157,7 +157,7 @@ git commit -m "重新修改的信息"
 
 ## lesson 5 了解reflog
 
-这个命令的作用是查看HEAD曾经指向的位置，返回的形式如下:
+这个命令的作用是查看HEAD曾经指向的位置，**返回的形式如下:**
 
 + ```commit-hash HEAD@{时间}: 操作说明``` 
 
@@ -171,15 +171,15 @@ git commit -m "重新修改的信息"
 
 + 这意味着，见下例:
 
-reset前: A \to B(cur) \to C, D \to E(目标节点)
+reset前: $A \to B(cur) \to C, \quad D \to E(目标节点)$
 
-reset后: A \to B \to D \to E, C(不可达)
+reset后: $A \to B \to D \to E, \quad C(不可达)$
 
 注意虽然HEAD指向的是分支指针，但是它会通过解析分支指针的指向来记录移动
 
-reflog也可以指定分支，HEAD和每个分支都有自己的reflog记录
+**reflog也可以指定分支，HEAD和每个分支都有自己的reflog记录**
 
-```git reflog 分支名```
+```git reflog 分支名```可以用来查看分支的reflog记录
 
 ##  lesson 6 了解remote
 
@@ -195,7 +195,7 @@ remote 本质上是存储了本地仓库与云端github上仓库的联系
 
 **origin/cur:**
 
-这是本地保存的远程状态记录，如 A \to B(origin/cur) \to C 意味着本地Git认为云端仓库的最新状态是origin/cur所处的位置
+这是本地保存的远程状态记录，如 $A \to B(origin/cur) \to C$ 意味着本地Git认为云端仓库的最新状态是origin/cur所处的位置
 
 ## lesson 7 了解push
 
@@ -205,7 +205,7 @@ remote 本质上是存储了本地仓库与云端github上仓库的联系
 
 + git push origin cur :将origin/cur移动到与其联系的cur0处(无联系则默认位置，即本地同名分支，但注意不会创建本地同名分支与origin分支的联系！)
 
-一般来说， git push origin cur相当于reset origin/cur的位置，Git会拒绝覆盖远程仓库记录的push，即Git要求origin/cur是cur0的祖先，如:
+一般来说， git push origin cur相当于reset origin/cur的位置，Git会拒绝覆盖远程仓库记录的push，即**Git要求origin/cur是cur0的祖先**，如:
 
 ```
 本地: A \to B(cur0)
