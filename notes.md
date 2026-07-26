@@ -66,7 +66,7 @@ Tree对象保存了当前暂存区的目录结构，文件名和文件名所指�
 
 + 2.HEAD是git底层的文本指针，它指向当前工作的哪一次commit状态
 
-## lesson-2 了解Branch
+## lesson-2 了解branch
 
 Bracn相当于是一个指向Commit对象的可变文本指针(实际存储分支名字+Commit引用)，相关的有以下命令:
 
@@ -92,17 +92,13 @@ Bracn相当于是一个指向Commit对象的可变文本指针(实际存储分�
 
 + 可以用命令git checkout -f 分支名字 强行切换，这样会直接用目标分支的文件覆盖当前分支工作区的文件
 
-## lesson 3 了解Merge
+## lesson 3 了解merge
 
-Merge的目的就是将不同的分支功能合并
-
-合并规则:
-
-+ 将两个分支，分别相对祖先节点标注出相对的修改部分，当其中一个分支相对修改位置在另外一个分支没有修改，或者两个分支的修改相同，则允许合并，不然则冲突
+merge的目的就是将不同的分支功能合并
 
 执行```git merge 被合并的分支名(feature)```将当前分支(cur)与分支(feature)进行合并
 
-**合并后:**
+**合并规则:**
 
 + Case1:如果cur所指向的是feature的父节点，则直接挪动cur指针到feature指针处
 
@@ -157,9 +153,9 @@ git commit -m "重新修改的信息"
 
 + 暂存区对相同文件只会保留最后一次add
 
-+ 工作区其实和暂存区很像，但是git工作区会保留未提交的修改，比如git reset --mixed HEAD^后，暂存区回到未add的状态，工作区回到保存了未提交的修改的状态
++ 工作区其实和暂存区很像，但是Git工作区会保留未提交的修改，比如git reset --mixed HEAD^后，暂存区回到未add的状态，工作区回到保存了未提交的修改的状态
 
-## lesson 5 reflog
+## lesson 5 了解reflog
 
 这个命令的作用是查看HEAD曾经指向的位置，返回的形式如下:
 
@@ -169,7 +165,7 @@ git commit -m "重新修改的信息"
 
 但注意，过了保存期限的Commit对象可能不会显示
 
-当想要恢复时，就执行 git reset --hard 恢复的Commit对象的hash 即可，这个命令实际过程如下:
+当想要恢复时，就执行 git reset --hard 恢复的Commit对象的hash即可，这个命令实际过程如下:
 
 + 当前分支指针指向目标Commit对象，'回'遍历目标节点，直到将目标节点的父节点按顺序最终和reset前的Commit对象连接起来
 
@@ -177,4 +173,89 @@ git commit -m "重新修改的信息"
 
 reset前: A \to B(cur) \to C, D \to E(目标节点)
 
-reset后: A \to B \to D \to E, C(悬空)
+reset后: A \to B \to D \to E, C(不可达)
+
+注意虽然HEAD指向的是分支指针，但是它会通过解析分支指针的指向来记录移动
+
+reflog也可以指定分支，HEAD和每个分支都有自己的reflog记录
+
+```git reflog 分支名```
+
+##  lesson 6 了解remote
+
+remote 本质上是存储了本地仓库与云端github上仓库的联系
+
+**命令:**
+
++ git remote -v :查看当前本地仓库与github上的仓库的联系
+
++ git remote add origin 仓库地址 :向与github上的仓库建立联系，其中 origin 是这个联系的名字
+
+在以下讲解中，用 origin 充当联系的名字
+
+**origin/cur:**
+
+这是本地保存的远程状态记录，如 A \to B(origin/cur) \to C 意味着本地Git认为云端仓库的最新状态是origin/cur所处的位置
+
+## lesson 7 了解push
+
+**命令:**
+
++ git push -u origin 本地分支名cur0:远程分支名cur :建立跟踪联系，即Git会默认将origin/cur移动到cur0处，常用于第一次push
+
++ git push origin cur :将origin/cur移动到与其联系的cur0处(无联系则默认位置，即本地同名分支，但注意不会创建本地同名分支与origin分支的联系！)
+
+一般来说， git push origin cur相当于reset origin/cur的位置，Git会拒绝覆盖远程仓库记录的push，即Git要求origin/cur是cur0的祖先，如:
+
+```
+本地: A \to B(cur0)
+远程: A \to B \to C(origin/cur)
+git push origin cur -- 被拒绝
+
+本地: A \to B \to C(cur0)
+远程: A \to B \to D(origin/cur)
+git push origin cur -- 被拒绝
+```
+
+注意，push不仅仅是将Commit对象上传到远程仓库，它还会将其相关的Tree对象，Blob对象也上传
+
+## lesson 8 学习fetch和pull
+
+### fetch部分
+
+fetch的工作: 默认情况下，对远程仓库所有分支cur，下载远程仓库相对于origin/cur的新的内容，并更新origin/cur的位置
+
+注意，默认下，fetch不是针对某一个origin的分支指针而言，它会更新所有的origin分支指针
+
+**命令:**
+
++ git fetch origin :对origin的分支进行如上更新，注意不会改变本地的分支指针
+
++ git fetch origin main : 获取远程仓库的main分支，移动origin/main
+
+第一次fetch，会加载远程仓库，建立与远程仓库一样的branch图
+
+但是fetch的要求宽松:
+
+当我们每一次fetch，本地都会记录远程仓库分支结构，同时将本地origin下的分支移动到远程仓库的对应的新位置
+
+当我们指定分支(main)时，Git会检查远程仓库main分支的可达对象，是否有需要补充的对象，然后挪动origin/main，如:
+
+```
+origin: A \to B \to C(origin/main)
+remote: A \to D(main)
+
+after fetch: origin: A \to D(origin/main)
+```
+
+### pull部分
+
+pull相当于fetch + merge
+
+**命令:**
+
++ git pull origin main :先执行git fetch origin main，然后执行git merge origin/main(合并origin/main和本地HEAD指向的分支指针)
+
++ git pull origin :先执行git fetch origin，只会按照origin分支与本地分支之间的联系进行merge，无联系则会报错
+
+注意，要遵循merge的规则
