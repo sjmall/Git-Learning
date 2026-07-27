@@ -201,7 +201,9 @@ remote 本质上是存储了本地仓库与云端github上仓库的联系
 
 **命令:**
 
-+ git push -u origin 本地分支名cur0:远程分支名cur :建立跟踪联系，即Git会默认将origin/cur移动到cur0处，常用于第一次push
++ git push -u origin 本地分支名cur0:远程分支名cur :上传的同时，建立跟踪联系，即之后Git会默认将origin/cur移动到cur0处
+
++ git push -u origin cur0 :可以省略本地分支名，这样会默认选择同名分支，特别的，如果远程仓库不存在cur0分支或者与cur0联系的分支，则远程仓库会创建cur0分支，origin内多出origin/cur0分支
 
 + git push origin cur :将origin/cur移动到与其联系的cur0处(无联系则默认位置，即本地同名分支，但注意不会创建本地同名分支与origin分支的联系！)
 
@@ -218,6 +220,8 @@ git push origin cur -- 被拒绝
 ```
 
 注意，push不仅仅是将Commit对象上传到远程仓库，它还会将其相关的Tree对象，Blob对象也上传
+
+push和fetch一样，会把远程仓库不存在的该分支的可达对象上传
 
 ## lesson 8 学习fetch和pull
 
