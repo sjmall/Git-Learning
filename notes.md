@@ -78,6 +78,10 @@ Bracn相当于是一个指向Commit对象的可变文本指针(实际存储分�
 
 + git branch :查看本地所有分支，带*的是HEAD所指向的
 
++ git branch -d 分支 :删除分支，注意，要求分支是别的分支的祖先节点才允许(不会丢失信息)
+
++ git branch -d -f 分支 :强制删除分支
+
 注意，新提交的Commit对象只会导致HEAD所指向的分支指针移动！最终形成像树一样的Commit对象连接结构
 
 重新回顾:命令git log --oneline的作用是从当前头指针HEAD一路打印回最初的commit记录，是一个子路！
@@ -217,6 +221,8 @@ remote 本质上是存储了本地仓库与云端github上仓库的联系
 
 + git push origin cur :将origin/cur移动到与其联系的cur0处(无联系则默认位置，即本地同名分支，但注意不会创建本地同名分支与origin分支的联系！)
 
++ git force -f origin cur :将origin/cur强制挪动到与其关联的cur0分支上(不存在则报错)，其会检查远程仓库中是否缺少cur0的可达对象，(如果有)上传后再挪动orgin/cur
+
 一般来说， git push origin cur相当于reset origin/cur的位置，Git会拒绝覆盖远程仓库记录的push，即**Git要求origin/cur是cur0的祖先**，如:
 
 ```
@@ -276,7 +282,7 @@ pull相当于fetch + merge
 
 注意，要遵循merge的规则
 
-# lesson 8 了解pull-request
+# lesson 9 了解pull-request
 
 **先了解一个命令:**
 
@@ -321,3 +327,29 @@ A \to B \to F \to C' \to D' \to E'(master)
 它同样要求有公共祖先
 
 为什么要创建新的Commit对象，是因为Git规定Commit对象不可变，也就是说我们不能通过改变父节点来接上
+
+# lesson 10 修改commit信息
+
+**命令:**
+
++ git commit --amend -m "新的信息" :创建新的信息为新信息的Commit对象，指向内容为原先内容，再让所处分支指向它
+
++ git rebase -i 分支(cur)~数字(num): 打开分支cur最近的num个Commit对象的信息，进入编辑界面，可能展示如图:
+
+```
+如果原先是A \to B \to C \to D(master)
+
+执行git rebase -i master~2后
+
+展示:
+pick def456 C message
+pick ghi789 D message
+
+将要修改信息的Commit对象前的pick改为 reword 或者 r
+
+之后重新输入信息
+```
+
+如果多个父节点，按照如git log 分支 --oneline展示的顺序向前找num个Commit对象
+
+但是如果要修改远程仓库的Commit信息，还需要结合命令: git push -f origin 分支
