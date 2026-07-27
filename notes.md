@@ -106,6 +106,14 @@ merge的目的就是将不同的分支功能合并
 
 + Case3:反之，产生新的Commit对象，其有两个父节点，分别为feature指针所指向的和cur指针所指向的，然后挪动cur指针指向当前新的Commit对象
 
+当遇到Case3时，新的Commit对象的指向的代码内容遵循如下规则:
+
++ 找到两个分支的公共祖先节点，然后识别出两个分支相对于公共祖先节点的修改部分，假设是feature合并到master
+
++ 如果feature的某些位置的修改部分与master冲突，则进入解决冲突的模式: 需要自行决定保留谁，然后重新add和commit，之后master指向合并的新的Commit对象M
+
++ 同样，如果master的某些位置修改部分能包含feature的某些修改部分或者反过来，则保留能包含的修改部分
+
 **命令:**
 
 + git log --graph --all :展现出分支图
@@ -118,7 +126,7 @@ merge的目的就是将不同的分支功能合并
 
 **这里解释一下怎么在linux子系统里面运行C++文件:**
 
-+ first step: g++ 文件名 -0 生成的可执行文件名
++ first step: g++ 文件名 -o 生成的可执行文件名
 
 + second step: ./可执行文件名
 
@@ -171,9 +179,11 @@ git commit -m "重新修改的信息"
 
 + 这意味着，见下例:
 
-reset前: $A \to B(cur) \to C, \quad D \to E(目标节点)$
+```
+reset前: A \to B(cur) \to C, \quad D \to E(目标节点)
 
-reset后: $A \to B \to D \to E, \quad C(不可达)$
+reset后: A \to B \to D \to E, \quad C(不可达)
+```
 
 注意虽然HEAD指向的是分支指针，但是它会通过解析分支指针的指向来记录移动
 
@@ -262,4 +272,52 @@ pull相当于fetch + merge
 
 + git pull origin :先执行git fetch origin，只会按照origin分支与本地分支之间的联系进行merge，无联系则会报错
 
++ git branch -vv :查看本地分支与origin内分支的track联系
+
 注意，要遵循merge的规则
+
+# lesson 8 了解pull-request
+
+**先了解一个命令:**
+
++ git branch -d 分支名 :表示删除分支
+
+**介绍 pull request :**
+
+这是一个在github上的功能，当我们上传了多个分支的时候，可以选择页面上的"pull request"来向管理员发出分支合并的申请
+
+分支合并在github上有三种模式可以选择:
+
++ 1.merge commit: 创建一个新的Commit对象来执行合并，新的Commit对象有两个父节点，分别是合并前两个分支所指向的Commit对象，然后pull request(PR)的base分支挪到新的Commit对象
+
++ 2.squash commit: 参见下例:
+
+```
+原先master: A \to B(master)
+原先feature: A \to B \to C \to D \to E(feature)
+
+执行squash commit后，生辰一个新的Commit对象S，其代码内容实际上就是E的代码内容(final verison)，然后其父节点是B，接着挪动master到S上
+
+因此squash commit后，结构为:
+A \to B \to C \to D \to E(feature)
+        \to S(master)
+```
+
+首先squash merge和普通merge一样要求有公共祖先，不然会报错
+
+squash merge会以两个分支的公共祖先节点为基准，计算feature相对其的内容变化以生成新的Commit对象S，然后接在master指向的Commit后面，挪动master
+
++ 3.rebase master: 它识别两个分支的公共祖先，把feature多出来的Commit对象，克隆，接在master指向的Commit对象后，挪动master，见下例:
+
+```
+原先master: A \to B \to F(master)
+原先feature: A \to B \to C \to D \to E(feature)
+
+执行rebase master后，结构为:
+A \to B \to F \to C' \to D' \to E'(master)
+        \to C \to D \to E(feature)
+```
+
+它同样要求有公共祖先
+
+为什么要创建新的Commit对象，是因为Git规定Commit对象不可变，也就是说我们不能通过改变父节点来接上
