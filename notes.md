@@ -282,7 +282,7 @@ pull相当于fetch + merge
 
 注意，要遵循merge的规则
 
-# lesson 9 了解pull-request
+## lesson 9 了解pull-request
 
 **先了解一个命令:**
 
@@ -328,7 +328,7 @@ A \to B \to F \to C' \to D' \to E'(master)
 
 为什么要创建新的Commit对象，是因为Git规定Commit对象不可变，也就是说我们不能通过改变父节点来接上
 
-# lesson 10 修改commit信息
+## lesson 10 修改commit信息
 
 **命令:**
 
@@ -353,3 +353,25 @@ pick ghi789 D message
 如果多个父节点，按照如git log 分支 --oneline展示的顺序向前找num个Commit对象
 
 但是如果要修改远程仓库的Commit信息，还需要结合命令: git push -f origin 分支
+
+## 额外的命令
+
+**命令:**
+
++ git remote rename 原远程仓库联系名 更名 :修改远程仓库联系的名字
+
++ git rm -r --cached 文件名或者文件夹名 :将该文件或者文件夹从暂存区中移除
+
+在主目录中创建 .gitignore ，在其中写入文件名或者文件夹名从而使Git忽略追踪它，如.gitignore中的内容:
+
+```
+# 忽略追踪所有位置叫做build的文件夹
+
+build/
+
+# 忽略追踪主文件中的build文件夹
+
+/build/
+```
+
+之后在我们 git add --all 的时候不会将这些文件或者文件夹加入暂存区
